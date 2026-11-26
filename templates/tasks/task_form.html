@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{% if task %}Edit task{% else %}New task{% endif %} · Team workspace{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-3xl">
+    <a href="{% if task %}{% url 'tasks:task_detail' task.pk %}{% else %}{% url 'tasks:task_list' %}{% endif %}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700">
+      <span aria-hidden="true">←</span> Back to {% if task %}task{% else %}run sheet{% endif %}
+    </a>
+    <div class="mt-6 border-b border-slate-200 pb-5">
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-950">{% if task %}Edit task{% else %}Add a task{% endif %}</h1>
+      <p class="mt-2 text-sm leading-6 text-slate-600">Keep the action, owner, and target date clear for the next person in the handoff.</p>
+    </div>
+    <form method="post" class="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="mb-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900" role="alert">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="grid gap-x-5 gap-y-5 sm:grid-cols-2">
+        {% for field in form %}
+          {% include "partials/_field.html" with field=field %}
+        {% endfor %}
+      </div>
+      <div class="mt-8 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 pt-5">
+        <a href="{% if task %}{% url 'tasks:task_detail' task.pk %}{% else %}{% url 'tasks:task_list' %}{% endif %}" class="rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700">Cancel</a>
+        <button type="submit" class="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700">{% if task %}Save changes{% else %}Create task{% endif %}</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

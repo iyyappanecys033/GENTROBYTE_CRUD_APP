@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Delete task · Team workspace{% endblock %}
+{% block content %}
+  <div class="py-6">
+    <a href="{% url 'tasks:task_detail' object.pk %}" class="mx-auto mb-5 block max-w-xl text-sm font-semibold text-slate-600 hover:text-blue-800">← Back to task</a>
+    {% include "partials/_delete_modal.html" with delete_message="This will remove the task and its notes from the team run sheet." cancel_url=object.get_absolute_url %}
+  </div>
+{% endblock %}

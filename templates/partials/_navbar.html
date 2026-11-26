@@ -1,0 +1,64 @@
+<a href="#main-content" class="sr-only z-50 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-blue-800 focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:shadow-lg">
+  Skip to content
+</a>
+<header class="border-b border-slate-200 bg-white">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
+    <a href="{% url 'tasks:task_list' %}" class="flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-700">
+      <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-slate-900 text-white" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 6.75h15m-15 5.25h9m-9 5.25h12" />
+          <circle cx="18" cy="12" r="2.25" class="fill-slate-900" />
+        </svg>
+      </span>
+      <span class="min-w-0">
+        <span class="block truncate text-sm font-semibold tracking-tight text-slate-950">GENTROBYTE</span>
+        <span class="block truncate text-[11px] text-slate-500">Team workspace</span>
+      </span>
+    </a>
+    {% if request.user.is_authenticated %}
+      <nav aria-label="Primary navigation" class="hidden items-center gap-1 sm:flex">
+        <a href="{% url 'tasks:task_list' %}" class="nav-link {% if request.resolver_match.url_name == 'task_list' or request.resolver_match.url_name == 'task_create' or request.resolver_match.url_name == 'task_detail' or request.resolver_match.url_name == 'task_update' or request.resolver_match.url_name == 'task_delete' %}nav-link-active{% endif %}">
+          Tasks
+        </a>
+        <a href="{% url 'tasks:member_list' %}" class="nav-link {% if 'member_' in request.resolver_match.url_name %}nav-link-active{% endif %}">
+          People
+        </a>
+      </nav>
+    {% endif %}
+    <div class="flex items-center gap-2">
+      {% if request.user.is_authenticated %}
+        <span class="hidden max-w-36 truncate text-xs text-slate-500 lg:inline">{{ request.user.get_username }}</span>
+        <form method="post" action="{% url 'accounts:logout' %}" class="hidden sm:block">
+          {% csrf_token %}
+          <button type="submit" class="rounded-lg px-2.5 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700">Sign out</button>
+        </form>
+        <a href="{% url 'tasks:task_create' %}" class="hidden items-center gap-2 rounded-lg bg-blue-700 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:inline-flex">
+          <svg viewBox="0 0 20 20" class="size-4 fill-none stroke-current" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" d="M10 4v12M4 10h12" />
+          </svg>
+          New task
+        </a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="rounded-lg bg-blue-700 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700">Sign in</a>
+      {% endif %}
+      {% if request.user.is_authenticated %}
+        <div class="relative sm:hidden" x-data="{ open: false }">
+          <button type="button" class="grid size-10 place-items-center rounded-lg border border-slate-200 text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700" aria-label="Open navigation menu" aria-controls="mobile-nav" :aria-expanded="open" @click="open = !open">
+            <svg viewBox="0 0 20 20" class="size-5 fill-none stroke-current" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" d="M3 5.5h14M3 10h14M3 14.5h14" />
+            </svg>
+          </button>
+          <nav id="mobile-nav" x-show="open" @click.outside="open = false" class="absolute right-0 top-12 z-30 w-48 rounded-xl border border-slate-200 bg-white p-2 shadow-lg" aria-label="Mobile navigation">
+            <a href="{% url 'tasks:task_list' %}" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Tasks</a>
+            <a href="{% url 'tasks:member_list' %}" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">People</a>
+            <a href="{% url 'tasks:task_create' %}" class="mt-1 block rounded-lg bg-blue-700 px-3 py-2.5 text-sm font-semibold text-white">New task</a>
+            <form method="post" action="{% url 'accounts:logout' %}" class="mt-1 border-t border-slate-200 pt-1">
+              {% csrf_token %}
+              <button type="submit" class="w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50">Sign out</button>
+            </form>
+          </nav>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</header>

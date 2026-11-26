@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}People · Team workspace{% endblock %}
+{% block content %}
+  <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">People &amp; resources</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">The team directory behind every task assignment.</p>
+    </div>
+    <a href="{% url 'tasks:member_create' %}" class="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 md:self-auto">
+      <svg viewBox="0 0 20 20" class="size-4 fill-none stroke-current" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="M10 4v12M4 10h12" /></svg>
+      Add person
+    </a>
+  </div>
+  <section class="mt-8 flex flex-col gap-4 border-y border-slate-200 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+    <p class="text-sm text-slate-700"><span class="font-semibold text-slate-950">{{ active_count }}</span> active team members <span class="mx-1 text-slate-300" aria-hidden="true">/</span> {{ paginator.count }} records</p>
+    <form method="get" class="grid gap-2 sm:grid-cols-[minmax(14rem,1fr)_11rem_auto]">
+      <label class="sr-only" for="people-search">Search people</label>
+      <input id="people-search" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search name, role, or team" class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-500 focus:border-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100">
+      <label class="sr-only" for="activity-filter">Filter by activity</label>
+      <select id="activity-filter" name="activity" class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 focus:border-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100">
+        <option value="">Everyone</option>
+        <option value="active" {% if request.GET.activity == 'active' %}selected{% endif %}>Active only</option>
+        <option value="inactive" {% if request.GET.activity == 'inactive' %}selected{% endif %}>Inactive only</option>
+      </select>
+      <button type="submit" class="rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700">Apply</button>
+    </form>
+  </section>
+  <section class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-label="Team member directory">
+    {% if members %}
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[680px] text-left">
+          <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-600">
+            <tr><th scope="col" class="px-5 py-3.5">Person</th><th scope="col" class="px-4 py-3.5">Team</th><th scope="col" class="px-4 py-3.5">Tasks</th><th scope="col" class="px-4 py-3.5">Availability</th><th scope="col" class="px-4 py-3.5"><span class="sr-only">Actions</span></th></tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            {% for member in members %}
+              <tr class="task-row">
+                <td class="px-5 py-4">
+                  <div class="flex items-center gap-3">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-blue-50 text-sm font-semibold text-blue-900">{{ member.name|slice:":1"|upper }}</span>
+                    <div class="min-w-0"><a href="{% url 'tasks:member_detail' member.pk %}" class="font-semibold text-slate-950 hover:text-blue-800">{{ member.name }}</a><p class="mt-0.5 truncate text-sm text-slate-600">{{ member.email }}</p></div>
+                  </div>
+                </td>
+                <td class="px-4 py-4"><span class="block text-sm font-medium text-slate-800">{{ member.role|default:"Role not set" }}</span><span class="mt-0.5 block text-xs text-slate-500">{{ member.department|default:"Team not set" }}</span></td>
+                <td class="px-4 py-4 text-sm font-medium text-slate-800">{{ member.task_count }}</td>
+                <td class="px-4 py-4">
+                  {% if member.is_active %}
+                    <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-900">Active</span>
+                  {% else %}
+                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">Inactive</span>
+                  {% endif %}
+                </td>
+                <td class="px-4 py-4 text-right"><a href="{% url 'tasks:member_update' member.pk %}" class="rounded-md px-2 py-1.5 text-sm font-semibold text-blue-800 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700">Edit<span class="sr-only"> {{ member.name }}</span></a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include "partials/_pagination.html" %}
+    {% else %}
+      <div class="px-6 py-14 text-center">
+        <p class="text-base font-semibold text-slate-950">{% if request.GET.q or request.GET.activity %}No people match those filters{% else %}Your directory is empty{% endif %}</p>
+        <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-600">Add a team member to make task ownership and handoffs easier to follow.</p>
+        <a href="{% url 'tasks:member_create' %}" class="mt-5 inline-flex rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Add a person</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}
