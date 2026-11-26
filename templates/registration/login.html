@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Team workspace{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-md py-8 sm:py-14">
+    <div class="border-b border-slate-200 pb-5">
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-950">Sign in to your workspace</h1>
+      <p class="mt-2 text-sm leading-6 text-slate-600">Use your Django account to view and manage team records.</p>
+    </div>
+    <form method="post" class="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+      {% csrf_token %}
+      {% if show_demo_credentials %}
+        <div class="mb-5 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-950">
+          <p class="font-semibold">Local demo access</p>
+          <p class="mt-1">Username: <code class="font-semibold">{{ demo_username }}</code></p>
+          <p>Password: <code class="font-semibold">{{ demo_password }}</code></p>
+          <p class="mt-2 text-xs leading-5">Run <code>python manage.py seed_data</code> if this account is not set up yet. These credentials are for local development only.</p>
+        </div>
+      {% endif %}
+      {% if form.non_field_errors %}
+        <div role="alert" class="mb-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">{{ form.non_field_errors }}</div>
+      {% endif %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <div class="space-y-5">
+        <div>
+          <label for="{{ form.username.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-800">Username</label>
+          {{ form.username }}
+          {% for error in form.username.errors %}<p class="mt-1.5 text-sm text-rose-700">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.password.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-800">Password</label>
+          {{ form.password }}
+          {% for error in form.password.errors %}<p class="mt-1.5 text-sm text-rose-700">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+      <button type="submit" class="mt-7 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700">Sign in</button>
+      <p class="mt-5 text-xs leading-5 text-slate-500">Accounts are managed by the site administrator; this demo does not provide public registration.</p>
+    </form>
+  </div>
+{% endblock %}
